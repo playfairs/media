@@ -218,10 +218,15 @@ function updateStats() {
         else if (categoryKey === 'audio') audioCount = filteredFiles.length;
     });
 
-    document.getElementById('totalFiles').textContent = totalFiles;
-    document.getElementById('imageCount').textContent = imageCount;
-    document.getElementById('videoCount').textContent = videoCount;
-    document.getElementById('audioCount').textContent = audioCount;
+    const totalEl = document.getElementById('totalFiles');
+    const imageEl = document.getElementById('imageCount');
+    const videoEl = document.getElementById('videoCount');
+    const audioEl = document.getElementById('audioCount');
+    
+    if (totalEl) totalEl.textContent = totalFiles;
+    if (imageEl) imageEl.textContent = imageCount;
+    if (videoEl) videoEl.textContent = videoCount;
+    if (audioEl) audioEl.textContent = audioCount;
 }
 
 function filterFilesInCategory(files) {
