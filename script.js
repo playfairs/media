@@ -13,7 +13,12 @@ const categoryConfig = {
 
 async function loadFilesFromServer() {
     try {
-        const response = await fetch(`${baseUrl}/assets/`);
+        let assetsUrl = `${baseUrl}/assets/`;
+        if (baseUrl.includes('media.playfairs.cc')) {
+            assetsUrl = 'https://media.playfairs.cc/assets/';
+        }
+        
+        const response = await fetch(assetsUrl);
         const html = await response.text();
         
         const parser = new DOMParser();
