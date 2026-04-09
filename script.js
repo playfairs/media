@@ -13,25 +13,8 @@ const categoryConfig = {
 
 async function loadFilesFromServer() {
     try {
-        let assetsUrl = `${baseUrl}/assets/`;
-        if (baseUrl.includes('media.playfairs.cc')) {
-            assetsUrl = 'https://media.playfairs.cc/assets/';
-        }
-        
-        const response = await fetch(assetsUrl);
-        const html = await response.text();
-        
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(html, 'text/html');
-        const links = doc.querySelectorAll('a');
-        
-        const files = Array.from(links)
-            .map(link => link.href)
-            .filter(href => !href.endsWith('/') && !href.includes('..'))
-            .map(href => {
-                const name = decodeURIComponent(href.split('/').pop());
-                return { name, size: 0 };
-            });
+        const response = await fetch(`${baseUrl}/files.json`);
+        const files = await response.json();
         
         if (files.length > 0) {
             organizeFilesByCategory(files);
