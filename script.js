@@ -161,13 +161,14 @@ function createCategorySection(categoryKey, category) {
 }
 
 function getFileUrl(filename) {
-    const possiblePaths = [
-        `${baseUrl}/assets/${encodeURIComponent(filename)}`,
-        `${baseUrl}/${encodeURIComponent(filename)}`,
-        `${baseUrl}/media/${encodeURIComponent(filename)}`,
-        `${baseUrl}/files/${encodeURIComponent(filename)}`
-    ];
-    return possiblePaths[0];
+    return `//media.playfairs.cc/assets/${encodeURIComponent(filename)}`;
+}
+
+function getCopyUrl(filename) {
+    if (baseUrl.includes('localhost')) {
+        return `${baseUrl}/assets/${encodeURIComponent(filename)}`;
+    }
+    return `https://media.playfairs.cc/assets/${encodeURIComponent(filename)}`;
 }
 
 function createFileCard(file, categoryKey) {
@@ -281,7 +282,7 @@ function downloadFile(url, filename) {
 }
 
 function copyDynamicUrl(filename) {
-    const url = getFileUrl(filename);
+    const url = getCopyUrl(filename);
     copyUrl(url);
 }
 
