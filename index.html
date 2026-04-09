@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Media</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .file-card {
+            transition: all 0.3s ease;
+        }
+        .file-card:hover {
+            transform: translateY(-4px);
+        }
+        .category-section {
+            animation: fadeIn 0.6s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .copy-btn {
+            transition: all 0.2s ease;
+        }
+        .copy-btn:active {
+            transform: scale(0.95);
+        }
+        .toast {
+            animation: slideIn 0.3s ease-out;
+        }
+        @keyframes slideIn {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+        }
+    </style>
+</head>
+<body class="bg-gray-900 min-h-screen text-gray-300">
+    <header class="bg-gray-800 border-b border-gray-700">
+        <div class="container mx-auto px-4 py-6">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-cloud text-3xl text-gray-400"></i>
+                    <h1 class="text-3xl font-bold text-gray-100">
+                        Media
+                    </h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <input type="text" id="searchInput" placeholder="Search files..." 
+                           class="px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:border-gray-500 text-gray-300 placeholder-gray-500">
+                    <button onclick="toggleView()" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition">
+                        <i class="fas fa-th" id="viewIcon"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+            <div class="bg-gray-800 rounded-lg p-4 border border-gray-700">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-400 text-sm">Total Files</p>
+                        <p class="text-2xl font-bold" id="totalFiles">0</p>
+                    </div>
+                    <i class="fas fa-file text-3xl text-gray-400"></i>
+                </div>
+            </div>
+            <div class="bg-gray-800 rounded-lg p-4 border border-gray-700">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-300 text-sm">Images</p>
+                        <p class="text-2xl font-bold" id="imageCount">0</p>
+                    </div>
+                    <i class="fas fa-image text-3xl text-gray-400"></i>
+                </div>
+            </div>
+            <div class="bg-gray-800 rounded-lg p-4 border border-gray-700">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-300 text-sm">Videos</p>
+                        <p class="text-2xl font-bold" id="videoCount">0</p>
+                    </div>
+                    <i class="fas fa-video text-3xl text-gray-400"></i>
+                </div>
+            </div>
+            <div class="bg-gray-800 rounded-lg p-4 border border-gray-700">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-300 text-sm">Audio</p>
+                        <p class="text-2xl font-bold" id="audioCount">0</p>
+                    </div>
+                    <i class="fas fa-music text-3xl text-gray-400"></i>
+                </div>
+            </div>
+        </div>
+
+        <div id="categoriesContainer">
+        </div>
+    </main>
+
+    <div id="toast" class="fixed top-4 right-4 bg-gray-700 text-gray-200 px-6 py-3 rounded-lg shadow-lg hidden toast">
+        <div class="flex items-center space-x-2">
+            <i class="fas fa-check-circle"></i>
+            <span id="toastMessage">Copied to clipboard!</span>
+        </div>
+    </div>
+
+    <script>
+        const fileData = {
+            images: {
+                title: 'Images',
+                icon: 'fa-image',
+                color: 'green',
+                files: [
+                    { name: 'LoreDB.png', size: '768 KB', category: 'database' },
+                    { name: 'ac.png', size: '507 KB', category: 'general' },
+                    { name: 'adb.png', size: '9 KB', category: 'general' },
+                    { name: 'bunni.png', size: '207 KB', category: 'general' },
+                    { name: 'dubai.png', size: '676 KB', category: 'general' },
+                    { name: 'fan.png', size: '840 KB', category: 'general' },
+                    { name: 'heater.png', size: '756 KB', category: 'general' },
+                    { name: 'light.png', size: '1.6 MB', category: 'general' },
+                    { name: 'python.png', size: '23 KB', category: 'programming' },
+                    { name: 'start.png', size: '62 KB', category: 'general' },
+                    { name: 'wound.png', size: '133 KB', category: 'general' },
+                    { name: 'wound2.jpeg', size: '37 KB', category: 'general' }
+                ]
+            },
+            gifs: {
+                title: 'GIFs',
+                icon: 'fa-film',
+                color: 'purple',
+                files: [
+                    { name: 'cum.gif', size: '19 KB', category: 'general' },
+                    { name: 'lick.gif', size: '661 KB', category: 'general' },
+                    { name: 'lick2.gif', size: '1.2 MB', category: 'general' },
+                    { name: 'lick3.gif', size: '1.7 MB', category: 'general' },
+                    { name: 'no.gif', size: '10 KB', category: 'general' },
+                    { name: 'nova.gif', size: '39 KB', category: 'general' }
+                ]
+            },
+            videos: {
+                title: 'Videos',
+                icon: 'fa-video',
+                color: 'red',
+                files: [
+                    { name: 'RaInT8J.mp4', size: '626 KB', category: 'general' }
+                ]
+            },
+            audio: {
+                title: 'Audio',
+                icon: 'fa-music',
+                color: 'yellow',
+                files: [
+                    { name: 'Labubu Dubai Chocolate.mp3', size: '2.4 MB', category: 'music' },
+                    { name: 'badapple.mp3', size: '5.3 MB', category: 'music' }
+                ]
+            }
+        };
+
+        let currentView = 'grid';
+        const baseUrl = 'https://media.playfairs.cc';
+
+        function init() {
+            renderCategories();
+            updateStats();
+            setupSearch();
+        }
+
+        function renderCategories() {
+            const container = document.getElementById('categoriesContainer');
+            container.innerHTML = '';
+
+            Object.keys(fileData).forEach(categoryKey => {
+                const category = fileData[categoryKey];
+                const section = createCategorySection(categoryKey, category);
+                container.appendChild(section);
+            });
+        }
+
+        function createCategorySection(categoryKey, category) {
+            const section = document.createElement('div');
+            section.className = 'category-section mb-8';
+            section.innerHTML = `
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-2xl font-bold flex items-center space-x-2">
+                        <i class="fas ${category.icon} text-gray-400"></i>
+                        <span>${category.title}</span>
+                        <span class="text-sm text-gray-500">(${category.files.length} files)</span>
+                    </h2>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4" id="${categoryKey}-grid">
+                    ${category.files.map(file => createFileCard(file, categoryKey)).join('')}
+                </div>
+            `;
+            return section;
+        }
+
+        function getFileUrl(filename) {
+            const possiblePaths = [
+                `${baseUrl}/assets/${encodeURIComponent(filename)}`,
+                `${baseUrl}/${encodeURIComponent(filename)}`,
+                `${baseUrl}/media/${encodeURIComponent(filename)}`,
+                `${baseUrl}/files/${encodeURIComponent(filename)}`
+            ];
+            return possiblePaths[0];
+        }
+
+        function createFileCard(file, categoryKey) {
+            const fileUrl = getFileUrl(file.name);
+            const isImage = categoryKey === 'images';
+            const isGif = categoryKey === 'gifs';
+            const isVideo = categoryKey === 'videos';
+            const isAudio = categoryKey === 'audio';
+            
+            let preview = '';
+            if (isImage || isGif) {
+                const iconClass = isGif ? 'fa-film' : 'fa-image';
+                preview = `<div class="w-full h-32 bg-gray-700 rounded-t-lg flex items-center justify-center">
+                    <img src="${fileUrl}" alt="${file.name}" class="max-w-full max-h-full object-contain hidden" 
+                         onload="this.style.display='block'; this.parentElement.style.display='none';"
+                         onerror="this.onerror=null; this.parentElement.innerHTML='<i class=&quot;fas ${iconClass} text-3xl text-gray-500&quot;></i>';">
+                    <i class="fas ${iconClass} text-3xl text-gray-500"></i>
+                </div>`;
+            } else if (isVideo) {
+                preview = `<div class="w-full h-32 bg-gray-700 rounded-t-lg flex items-center justify-center">
+                    <video src="${fileUrl}" class="max-w-full max-h-full hidden" controls
+                           onloadstart="this.style.display='block'; this.parentElement.style.display='none';"
+                           onerror="this.onerror=null; this.parentElement.innerHTML='<i class=&quot;fas fa-video text-4xl text-gray-500&quot;></i>';">
+                    </video>
+                    <i class="fas fa-video text-4xl text-gray-500"></i>
+                </div>`;
+            } else if (isAudio) {
+                preview = `<div class="w-full h-32 bg-gray-700 rounded-t-lg flex items-center justify-center">
+                    <i class="fas fa-music text-4xl text-gray-500"></i>
+                </div>`;
+            }
+
+            return `
+                <div class="file-card bg-gray-800 rounded-lg border border-gray-700 overflow-hidden hover:bg-gray-750">
+                    ${preview}
+                    <div class="p-4">
+                        <h3 class="font-semibold text-sm mb-2 truncate" title="${file.name}">${file.name}</h3>
+                        <div class="flex items-center justify-between text-xs text-gray-500 mb-3">
+                            <span>${file.size}</span>
+                            <span class="px-2 py-1 bg-gray-700 rounded-full">${file.category}</span>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button onclick="copyDynamicUrl('${file.name}')" class="copy-btn flex-1 px-3 py-2 bg-gray-700 hover:bg-gray-600 rounded text-xs transition">
+                                <i class="fas fa-copy mr-1"></i> Copy URL
+                            </button>
+                            <button onclick="downloadDynamicFile('${file.name}')" class="copy-btn flex-1 px-3 py-2 bg-gray-700 hover:bg-gray-600 rounded text-xs transition">
+                                <i class="fas fa-download mr-1"></i> Download
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function updateStats() {
+            let totalFiles = 0;
+            let imageCount = fileData.images.files.length;
+            let videoCount = fileData.videos.files.length;
+            let audioCount = fileData.audio.files.length;
+            
+            Object.values(fileData).forEach(category => {
+                totalFiles += category.files.length;
+            });
+
+            document.getElementById('totalFiles').textContent = totalFiles;
+            document.getElementById('imageCount').textContent = imageCount;
+            document.getElementById('videoCount').textContent = videoCount;
+            document.getElementById('audioCount').textContent = audioCount;
+        }
+
+        function copyUrl(url) {
+            navigator.clipboard.writeText(url).then(() => {
+                showToast('URL copied to clipboard!');
+            });
+        }
+
+        function downloadFile(url, filename) {
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            showToast('Download started!');
+        }
+
+        function copyDynamicUrl(filename) {
+            const url = getFileUrl(filename);
+            copyUrl(url);
+        }
+
+        function downloadDynamicFile(filename) {
+            const url = getFileUrl(filename);
+            downloadFile(url, filename);
+        }
+
+        function checkFileExists(url) {
+            fetch(url, { method: 'HEAD' })
+                .then(response => {
+                    if (!response.ok) {
+                        console.warn(`File not accessible: ${url} (${response.status})`);
+                    }
+                })
+                .catch(error => {
+                    console.warn(`Error checking file: ${url}`, error);
+                });
+        }
+
+        function debugFiles() {
+            Object.keys(fileData).forEach(categoryKey => {
+                fileData[categoryKey].files.forEach(file => {
+                    const url = `${baseUrl}/assets/${encodeURIComponent(file.name)}`;
+                    checkFileExists(url);
+                });
+            });
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            toastMessage.textContent = message;
+            toast.classList.remove('hidden');
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 3000);
+        }
+
+        function setupSearch() {
+            const searchInput = document.getElementById('searchInput');
+            searchInput.addEventListener('input', (e) => {
+                const query = e.target.value.toLowerCase();
+                filterFiles(query);
+            });
+        }
+
+        function filterFiles(query) {
+            Object.keys(fileData).forEach(categoryKey => {
+                const category = fileData[categoryKey];
+                const filteredFiles = category.files.filter(file => 
+                    file.name.toLowerCase().includes(query) ||
+                    file.category.toLowerCase().includes(query)
+                );
+                
+                const grid = document.getElementById(`${categoryKey}-grid`);
+                if (grid) {
+                    grid.innerHTML = filteredFiles.map(file => createFileCard(file, categoryKey)).join('');
+                }
+            });
+        }
+
+        function toggleView() {
+            const icon = document.getElementById('viewIcon');
+            if (currentView === 'grid') {
+                currentView = 'list';
+                icon.className = 'fas fa-list';
+            } else {
+                currentView = 'grid';
+                icon.className = 'fas fa-th';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            init();
+            debugFiles();
+        });
+    </script>
+</body>
+</html>
